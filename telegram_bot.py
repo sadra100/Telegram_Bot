@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+import Token
 
-TOKEN = '7903905427:AAHuHNIJLp32HYVcTEIiLkyBjyxc8b0qht8'
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -28,7 +28,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 def main():
-    application = ApplicationBuilder().token(TOKEN).build()
+    application = ApplicationBuilder().token(Token.TOKEN).build()
     application.add_handler(CommandHandler('start', start))
 
     application.add_handler(CommandHandler('help', help_command))
