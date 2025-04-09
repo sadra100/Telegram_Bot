@@ -1,11 +1,12 @@
-from telegram import Update
+from telegram import Update,KeyboardButton,ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 import Token
 
 
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text('سلام! به ربات من خوش آمدید.هرسوالی دارید بپرسید')
+    buttons=[[KeyboardButton('شروع'),KeyboardButton('راهنما'),KeyboardButton('اطلاعات'),KeyboardButton('ارسال عکس')]]
+    reply_markup=ReplyKeyboardMarkup(buttons,resize_keyboard=True)
+    await update.message.reply_text('سلام! به ربات من خوش آمدید.هرسوالی دارید بپرسید',reply_markup=reply_markup)
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -22,9 +23,25 @@ async def info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(info_text)
 
 
+async def send_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    chat_id = update.message.chat_id
+    await context.bot.send_photo(chat_id=chat_id,
+                                 photo='https://toplearn.com/img/course/%D8%B3%D8%A7%D8%AE%D8%AA_%D8%B1%D8%A8%D8%A7%D8%AA_%D8%AA%D9%84%DA%AF%D8%B1%D8%A7%D9%85_%D8%A8%D8%A7_%D9%BE%D8%A7%DB%8C%D8%AA%D9%88%D9%86_%D9%88_%D8%AF%DB%8C%D8%AA%D8%A7%D8%A8%DB%8C%D8%B3_sqlite.jpg',
+                                 caption='این یک تصویر نمونه هست')
+
+
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_message = update.message.text
-    await update.message.reply_text(f'شما گفتید:{user_message}')
+
+    if user_message == 'ارسال عکس':
+        await send_photo(update, context)
+
+    elif user_message == 'راهنما':
+        await help_command(update, context)
+
+    else:
+
+        await update.message.reply_text(f'شما گفتید:{user_message}')
 
 
 def main():
