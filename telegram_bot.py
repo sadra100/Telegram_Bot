@@ -1,12 +1,38 @@
-from telegram import Update,KeyboardButton,ReplyKeyboardMarkup
+from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 import Token
+import sqlite3
+
+
+def save_user(user):
+    conn = sqlite3.connect('bot_database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT OR IGNORE INTO users (user_id,user_name,first_name,last_name)
+        VALUES (?,?,?,?)
+    ''', (user.id, user.username, user.first_name, user.last_name))
+    conn.commit()
+    conn.close()
+
+
+def save_message(user_id, message):
+    conn = sqlite3.connect('bot_database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO messages (user_id,message)
+        VALUES (?,?)
+    ''', (user_id, message))
+    conn.commit()
+    conn.close()
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    buttons=[[KeyboardButton('شروع'),KeyboardButton('راهنما'),KeyboardButton('اطلاعات'),KeyboardButton('ارسال عکس')]]
-    reply_markup=ReplyKeyboardMarkup(buttons,resize_keyboard=True)
-    await update.message.reply_text('سلام! به ربات من خوش آمدید.هرسوالی دارید بپرسید',reply_markup=reply_markup)
+    user = update.effective_user
+    save_user(user)
+    buttons = [
+        [KeyboardButton('شروع'), KeyboardButton('راهنما'), KeyboardButton('اطلاعات'), KeyboardButton('ارسال عکس')]]
+    reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
+    await update.message.reply_text('سلام! به ربات من خوش آمدید.هرسوالی دارید بپرسید', reply_markup=reply_markup)
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -31,7 +57,9 @@ async def send_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user = update.effective_user
     user_message = update.message.text
+    save_message(user.id, user_message)
 
     if user_message == 'ارسال عکس':
         await send_photo(update, context)
