@@ -4,7 +4,13 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 from db_utils import save_user
 import logging
 
+#Setting log
+logging.basicConfig(level=logging.INFO)
+logger=logging.getLogger(__name__)
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user=update.effective_user
+    save_user(user)
     buttons = [
         [KeyboardButton('شروع'), KeyboardButton('راهنما'), KeyboardButton('اطلاعات'), KeyboardButton('ارسال عکس')]]
     reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
