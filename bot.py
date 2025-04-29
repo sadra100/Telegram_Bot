@@ -1,6 +1,7 @@
 from config import BOT_TOKEN,DATABASE_PATH
 from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+from db_utils import save_user
 import logging
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
