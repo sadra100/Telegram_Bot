@@ -1,8 +1,8 @@
 import sqlite3
-
+from config import DATABASE_PATH
 
 def initialized_database():
-    conn = sqlite3.connect('bot_database.db')
+    conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users(
@@ -12,10 +12,21 @@ def initialized_database():
             last_name TEXT
         )
 ''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS messages(
+        id INTEGER PRIMARY KEY,
+        user_id INTEGER,
+        message TEXT,
+        timestamp DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (user_id)
+    )
+    ''')
 
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_id ON users (user_id)')
-    cursor.commit()
-    cursor.close()
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_id ON messages (id)')
+
+    conn.commit()
+    conn.close()
 
 
 def save_user(user):
@@ -41,3 +52,14 @@ def save_user(user):
 
     finally:
         conn.close()
+
+def save_message(user_id,message):
+    conn=sqlite3.connect(DATABASE_PATH)
+    cursor=conn.cursor()
+    cursor.execute('''
+        INSERT INTO messages(user_id,message)
+        VALUES(?,?)
+    ''',(user_id,message))
+    conn.commit()
+    conn.close()
+
