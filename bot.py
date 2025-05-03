@@ -24,6 +24,10 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                 'یادکمه های زیر را امتحان کنید'
     await update.message.reply_text(help_text)
 
+async def info(update:Update,context:ContextTypes.DEFAULT_TYPE)->None:
+    info_text='این ربات می تواند به شما در انجام کارها کمک کند'
+    await update.message.reply_text(info_text)
+
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -39,6 +43,7 @@ def main():
     application.add_handler(CommandHandler('help', help_command))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+    application.add_handler(CommandHandler('info',info))
 
 
     application.run_polling()
